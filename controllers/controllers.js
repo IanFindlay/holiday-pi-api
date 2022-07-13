@@ -1,4 +1,4 @@
-const { getAirports } = require("./models");
+const { getAirports } = require("../models");
 
 function fetchAirports(_, res, next) {
   getAirports()

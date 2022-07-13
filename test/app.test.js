@@ -30,6 +30,17 @@ const airportThree = {
 };
 
 describe("app", () => {
+  describe("Invalid endpoint", () => {
+    test("Status 404 - responds with a msg of 'Path not found' when an incorrect endpoint is requested", () => {
+      return request(app)
+        .get("/api/not-an-endpoint")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Path not found");
+        });
+    });
+  });
+
   describe("GET /api/airports", () => {
     it(`should have a status of 200 and return an object with a key of airports and a value of an array of airport objects
         with id, name, latitude and longitude key value pairs`, () => {
