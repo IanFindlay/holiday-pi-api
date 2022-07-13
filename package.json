@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "start": "node listen.js",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "husky": "^8.0.1",
     "jest": "^28.1.2",
     "supertest": "^6.2.4"
   },
