@@ -33,4 +33,31 @@ async function calculateJourneyCosts(distance, numPassengers) {
   };
 }
 
-module.exports = { getAirports, calculateJourneyCosts };
+async function calculateRouteDetails(id, toId, numPassengers) {
+  if (numPassengers === undefined)
+    return Promise.reject({ status: 400, msg: "Missing required field" });
+
+  if (numPassengers <= 0)
+    return Promise.reject({ status: 400, msg: "Bad request" });
+
+  const outboundCall = axios.get(`${baseUrl}/airport/${id}/to/${toId}`);
+  const returnCall = axios.get(`${baseUrl}/airport/${toId}/to/${id}`);
+  const [{ data: outboundDetails }, { data: returnDetails }] =
+    await Promise.all([outboundCall, returnCall]);
+
+  if (outboundDetails.error)
+    return Promise.reject({
+      status: 404,
+      msg: "Bad request - one or more of the airport ids was not found",
+    });
+
+  const costPerMile = 0.1;
+  const totalMiles = [...outboundDetails.miles, ...returnDetails.miles].reduce(
+    (a, b) => a + b
+  );
+  totalCost = totalMiles * costPerMile * numPassengers;
+
+  return { outboundDetails, returnDetails, totalCost };
+}
+
+module.exports = { getAirports, calculateJourneyCosts, calculateRouteDetails };

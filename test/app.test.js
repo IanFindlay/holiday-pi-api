@@ -67,6 +67,84 @@ describe("app", () => {
     });
   });
 
+  describe("GET /api/airports/:id/to/:toId", () => {
+    const mockOutbound = {
+      journey: ["AP1", "AP2", "AP3"],
+      miles: [20, 10],
+    };
+    const mockReturn = {
+      journey: ["AP3", "AP1"],
+      miles: [10],
+    };
+
+    it(`should have a status of 200 and return an object with a key of details and a value of an object with the keys 'outboundDetails',
+       'returnDetails' and 'totalCost'. outboundDetails and returnDetails should match their respective mocks and totalCost should be
+       calculated correctly`, () => {
+      axios.get.mockResolvedValueOnce({ data: mockOutbound });
+      axios.get.mockResolvedValueOnce({ data: mockReturn });
+      return request(app)
+        .get("/api/airports/AP1/to/AP3")
+        .send({ numPassengers: 1 })
+        .expect(200)
+        .then(({ body: { details } }) => {
+          expect(details).toEqual({
+            outboundDetails: mockOutbound,
+            returnDetails: mockReturn,
+            totalCost: 4,
+          });
+        });
+    });
+    it("should have a totalCost that scales directly with the numPassengers request field value", () => {
+      axios.get.mockResolvedValueOnce({ data: mockOutbound });
+      axios.get.mockResolvedValueOnce({ data: mockReturn });
+      return request(app)
+        .get("/api/airports/AP1/to/AP3")
+        .send({ numPassengers: 4 })
+        .expect(200)
+        .then(({ body: { details } }) => {
+          expect(details.totalCost).toBe(16);
+        });
+    });
+    it(`should return status 400 and an object with a key of 'msg' with a value of 'Missing required field' if 'numPassengers' field
+        isn't sent with the request`, () => {
+      return request(app)
+        .get("/api/airports/AP1/to/AP3")
+        .send({})
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Missing required field");
+        });
+    });
+    it("should return status 400 and an object with a key of 'msg' with a value of 'Bad request' if 'numPassengers' field is not above 0", () => {
+      return request(app)
+        .get("/api/airports/AP1/to/AP3")
+        .send({ numPassengers: -1 })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request");
+        });
+    });
+    it(`should return status 404 and an object with a key of 'msg' with a value of 'Bad request - one or more of the airport ids
+        was not found' if any parametric variable isn't a known airport ID`, () => {
+      axios.get.mockResolvedValueOnce({
+        data: {
+          error: "Origin airport 'notAnId' cannot be found",
+          originalException: "NoneType: None\n",
+        },
+      });
+
+      return request(app)
+        .get("/api/airports/notAnId/to/AP3")
+        .send({ numPassengers: 1 })
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe(
+            "Bad request - one or more of the airport ids was not found"
+          );
+        });
+    });
+  });
+
   describe("GET /api/journey", () => {
     it(`should have a status of 200 and return an object with a key of journey and a value of an object with taxi and car keys whose
         values are the estimated costs of going the request 'distance' with the request 'numPassengers' using that mode of transport`, () => {
