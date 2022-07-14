@@ -16,6 +16,23 @@ describe("app", () => {
     });
   });
 
+  describe("/api", () => {
+    describe("GET", () => {
+      test("Status 200 - responds with an object detailing the available endpoints", () => {
+        return request(app)
+          .get("/api")
+          .expect(200)
+          .then(({ body }) => {
+            expect(typeof body).toBe("object");
+            expect(body["GET /api"]).not.toBe(undefined);
+            expect(body["GET /api/airports"]).not.toBe(undefined);
+            expect(body["GET /api/airports/:id/to/:toId"]).not.toBe(undefined);
+            expect(body["GET /api/journey"]).not.toBe(undefined);
+          });
+      });
+    });
+  });
+
   describe("GET /api/airports", () => {
     const airports = [
       {
