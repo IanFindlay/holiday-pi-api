@@ -31,7 +31,7 @@ const airportThree = {
 
 describe("app", () => {
   describe("Invalid endpoint", () => {
-    test("Status 404 - responds with a msg of 'Path not found' when an incorrect endpoint is requested", () => {
+    it("should have status 404 and respond with a msg of 'Path not found' when an incorrect endpoint is requested", () => {
       return request(app)
         .get("/api/not-an-endpoint")
         .expect(404)
