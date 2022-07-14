@@ -66,4 +66,28 @@ describe("app", () => {
         });
     });
   });
+
+  describe("GET /api/journey", () => {
+    it(`should have a status of 200 and return an object with a key of journey and a value of an object with taxi and car keys whose
+        values are the estimated costs of going the request 'distance' with the request 'numPassengers' using that mode of transport`, () => {
+      return request(app)
+        .get("/api/journey")
+        .send({ distance: 10, numPassengers: 1 })
+        .expect(200)
+        .then(({ body: { journey } }) => {
+          expect(journey.taxi).toBe(4);
+          expect(journey.car).toBe(5);
+        });
+    });
+    it(`should scale with the number of passengers as each car/taxi can only hold 4 people`, () => {
+      return request(app)
+        .get("/api/journey")
+        .send({ distance: 10, numPassengers: 5 })
+        .expect(200)
+        .then(({ body: { journey } }) => {
+          expect(journey.taxi).toBe(8);
+          expect(journey.car).toBe(10);
+        });
+    });
+  });
 });

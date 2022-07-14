@@ -15,4 +15,16 @@ async function getAirports() {
   });
 }
 
-module.exports = { getAirports };
+async function calculateJourneyCosts(distance, numPassengers) {
+  const numCars = Math.ceil(numPassengers / 4);
+  const taxiPerMile = 0.4;
+  const carPerMile = 0.2;
+  const parkingCost = 3;
+
+  return {
+    taxi: distance * taxiPerMile * numCars,
+    car: distance * carPerMile * numCars + numCars * parkingCost,
+  };
+}
+
+module.exports = { getAirports, calculateJourneyCosts };

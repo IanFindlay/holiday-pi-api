@@ -1,8 +1,8 @@
 const express = require("express");
 
 const {
-const { fetchAirports } = require("./controllers/controllers");
-const { handleInvalidEndpoint } = require("./controllers/errors.controller");
+  fetchAirports,
+  fetchJourneyCosts,
 } = require("./controllers/controllers");
 const {
   handleInvalidEndpoint,
@@ -11,9 +11,11 @@ const {
 
 const app = express();
 
+app.use(express.json());
 
 app.get("/api/airports", fetchAirports);
 
+app.get("/api/journey", fetchJourneyCosts);
 
 app.all("/*", handleInvalidEndpoint);
 
