@@ -67,6 +67,47 @@ describe("app", () => {
     });
   });
 
+  describe("GET /api/airports/:id/to/:toId", () => {
+    const mockOutbound = {
+      journey: ["AP1", "AP2", "AP3"],
+      miles: [20, 10],
+    };
+    const mockReturn = {
+      journey: ["AP3", "AP1"],
+      miles: [10],
+    };
+    beforeEach(() => {
+      axios.get
+        .mockResolvedValueOnce(mockOutbound)
+        .mockResolvedValueOnce(mockReturn);
+    });
+
+    it(`should have a status of 200 and return an object with a key of details and a value of an object with the keys 'outboundDetails',
+       'returnDetails' and 'totalCost'. outboundDetails and returnDetails should match their respective mocks and totalCost should be
+       calculated correctly`, () => {
+      return request(app)
+        .get("/api/airports/AP1/to/AP3")
+        .send({ numPassengers: 1 })
+        .expect(200)
+        .then(({ body: { details } }) => {
+          expect(details).toEqual({
+            outboundDetails: mockOutbound,
+            returnDetails: mockReturn,
+            totalCost: 4,
+          });
+        });
+    });
+    it("should have a totalCost that scales directly with the numPassengers request field value", () => {
+      return request(app)
+        .get("/api/airports/AP1/to/AP3")
+        .send({ numPassengers: 4 })
+        .expect(200)
+        .then(({ body: { details } }) => {
+          expect(details.totalCost).toBe(16);
+        });
+    });
+  });
+
   describe("GET /api/journey", () => {
     it(`should have a status of 200 and return an object with a key of journey and a value of an object with taxi and car keys whose
         values are the estimated costs of going the request 'distance' with the request 'numPassengers' using that mode of transport`, () => {
