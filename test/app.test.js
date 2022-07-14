@@ -78,8 +78,8 @@ describe("app", () => {
     };
     beforeEach(() => {
       axios.get
-        .mockResolvedValueOnce(mockOutbound)
-        .mockResolvedValueOnce(mockReturn);
+        .mockResolvedValueOnce({ data: mockOutbound })
+        .mockResolvedValueOnce({ data: mockReturn });
     });
 
     it(`should have a status of 200 and return an object with a key of details and a value of an object with the keys 'outboundDetails',

@@ -36,10 +36,8 @@ async function calculateJourneyCosts(distance, numPassengers) {
 async function calculateRouteDetails(id, toId, numPassengers) {
   const outboundCall = axios.get(`${baseUrl}/airport/${id}/to/${toId}`);
   const returnCall = axios.get(`${baseUrl}/airport/${toId}/to/${id}`);
-  const [outboundDetails, returnDetails] = await Promise.all([
-    outboundCall,
-    returnCall,
-  ]);
+  const [{ data: outboundDetails }, { data: returnDetails }] =
+    await Promise.all([outboundCall, returnCall]);
 
   const costPerMile = 0.1;
   const totalMiles = [...outboundDetails.miles, ...returnDetails.miles].reduce(
