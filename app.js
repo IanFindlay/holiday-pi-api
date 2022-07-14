@@ -1,5 +1,6 @@
 const express = require("express");
 
+const { getEndpoints } = require("./controllers/api.controller");
 const {
   fetchAirports,
   fetchJourneyCosts,
@@ -14,6 +15,8 @@ const {
 const app = express();
 
 app.use(express.json());
+
+app.get("/api", getEndpoints);
 
 app.get("/api/airports", fetchAirports);
 
