@@ -89,5 +89,25 @@ describe("app", () => {
           expect(journey.car).toBe(10);
         });
     });
+    it(`should return status 400 and an object with a key of 'msg' with a value of 'Missing required field' if 'distance' field isn't sent
+        with the request`, () => {
+      return request(app)
+        .get("/api/journey")
+        .send({ numPassengers: 1 })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Missing required field");
+        });
+    });
+    it(`should return status 400 and an object with a key of 'msg' with a value of 'Missing required field' if 'numPassengers' field isn't sent
+        with the request`, () => {
+      return request(app)
+        .get("/api/journey")
+        .send({ distance: 1 })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Missing required field");
+        });
+    });
   });
 });

@@ -7,6 +7,7 @@ const {
 const {
   handleInvalidEndpoint,
   handle500Errors,
+  handleCustomErrors,
 } = require("./controllers/errors.controller");
 
 const app = express();
@@ -18,6 +19,8 @@ app.get("/api/airports", fetchAirports);
 app.get("/api/journey", fetchJourneyCosts);
 
 app.all("/*", handleInvalidEndpoint);
+
+app.use(handleCustomErrors);
 
 app.use(handle500Errors);
 
