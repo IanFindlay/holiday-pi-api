@@ -79,7 +79,7 @@ describe("app", () => {
           expect(journey.car).toBe(5);
         });
     });
-    it(`should scale with the number of passengers as each car/taxi can only hold 4 people`, () => {
+    it("should scale with the number of passengers as each car/taxi can only hold 4 people", () => {
       return request(app)
         .get("/api/journey")
         .send({ distance: 10, numPassengers: 5 })
