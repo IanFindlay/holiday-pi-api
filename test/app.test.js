@@ -7,15 +7,15 @@ jest.mock("axios");
 const airportOne = {
   id: "AP1",
   name: "airport 1",
-  latitude: 1,
-  longitude: 1,
+  latitude: "1",
+  longitude: "1",
   connections: [{ id: "AP2", miles: 20 }],
 };
 const airportTwo = {
   id: "AP2",
   name: "airport 2",
-  latitude: 2,
-  longitude: 2,
+  latitude: "2",
+  longitude: "2",
   connections: [
     { id: "AP1", miles: 20 },
     { id: "AP3", miles: 10 },
@@ -24,8 +24,8 @@ const airportTwo = {
 const airportThree = {
   id: "AP3",
   name: "airport 3",
-  latitude: 3,
-  longitude: 3,
+  latitude: "3",
+  longitude: "3",
   connections: [{ id: "AP1", miles: 5 }],
 };
 
