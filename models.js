@@ -9,8 +9,8 @@ async function getAirports() {
     return {
       id: airport.id,
       name: airport.name,
-      latitude: airport.latitude,
-      longitude: airport.longitude,
+      latitude: Number(airport.latitude),
+      longitude: Number(airport.longitude),
     };
   });
 }
