@@ -24,7 +24,7 @@ function fetchJourneyCosts(req, res, next) {
 function fetchRouteDetails(req, res, next) {
   const { id, toId } = req.params;
   const { numPassengers } = req.body;
-  calculateRouteDetails(id, toId, numPassengers)
+  calculateRouteDetails(id.toUpperCase(), toId.toUpperCase(), numPassengers)
     .then((details) => {
       res.status(200).send({ details });
     })
