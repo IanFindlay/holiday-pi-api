@@ -109,5 +109,23 @@ describe("app", () => {
           expect(msg).toBe("Missing required field");
         });
     });
+    it("should return status 400 and an object with a key of 'msg' with a value of 'Bad request' if 'distance' field is not above 0", () => {
+      return request(app)
+        .get("/api/journey")
+        .send({ distance: -100, numPassengers: 1 })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request");
+        });
+    });
+    it("should return status 400 and an object with a key of 'msg' with a value of 'Bad request' if 'numPassengers' field is not above 0", () => {
+      return request(app)
+        .get("/api/journey")
+        .send({ distance: 1, numPassengers: -10 })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request");
+        });
+    });
   });
 });

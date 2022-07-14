@@ -19,6 +19,9 @@ async function calculateJourneyCosts(distance, numPassengers) {
   if (distance === undefined || numPassengers === undefined)
     return Promise.reject({ status: 400, msg: "Missing required field" });
 
+  if (distance <= 0 || numPassengers <= 0)
+    return Promise.reject({ status: 400, msg: "Bad request" });
+
   const numCars = Math.ceil(numPassengers / 4);
   const taxiPerMile = 0.4;
   const carPerMile = 0.2;
