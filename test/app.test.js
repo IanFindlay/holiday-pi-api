@@ -101,10 +101,10 @@ describe("app", () => {
       axios.get.mockResolvedValueOnce({ data: mockOutbound });
       axios.get.mockResolvedValueOnce({ data: mockReturn });
       return request(app)
-        .get("/api/airports/AP1/to/AP3")
-        .send({ numPassengers: 1 })
+        .get("/api/airports/AP1/to/AP3?numPassengers=1")
         .expect(200)
         .then(({ body: { details } }) => {
+          console.log(details);
           expect(details).toEqual({
             outboundDetails: mockOutbound,
             returnDetails: mockReturn,
@@ -112,31 +112,36 @@ describe("app", () => {
           });
         });
     });
-    it("should have a totalCost that scales directly with the numPassengers request field value", () => {
+    it("should have a totalCost that scales directly with the numPassengers request query value", () => {
       axios.get.mockResolvedValueOnce({ data: mockOutbound });
       axios.get.mockResolvedValueOnce({ data: mockReturn });
       return request(app)
-        .get("/api/airports/AP1/to/AP3")
-        .send({ numPassengers: 4 })
+        .get("/api/airports/AP1/to/AP3?numPassengers=4")
         .expect(200)
         .then(({ body: { details } }) => {
           expect(details.totalCost).toBe(16);
         });
     });
-    it(`should return status 400 and an object with a key of 'msg' with a value of 'Missing required field' if 'numPassengers' field
-        isn't sent with the request`, () => {
+    it(`should return status 400 and an object with a key of 'msg' with a value of 'Missing required query' if 'numPassengers' query
+        isn't part of the URL`, () => {
       return request(app)
         .get("/api/airports/AP1/to/AP3")
-        .send({})
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("Missing required field");
+          expect(msg).toBe("Missing required query");
         });
     });
-    it("should return status 400 and an object with a key of 'msg' with a value of 'Bad request' if 'numPassengers' field is not above 0", () => {
+    it("should return status 400 and an object with a key of 'msg' with a value of 'Bad request' if 'numPassengers' query is not above 0", () => {
       return request(app)
-        .get("/api/airports/AP1/to/AP3")
-        .send({ numPassengers: -1 })
+        .get("/api/airports/AP1/to/AP3?numPassengers=-1")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request");
+        });
+    });
+    it("should return status 400 and an object with a key of 'msg' with a value of 'Bad request' if 'numPassengers' query is not a number", () => {
+      return request(app)
+        .get("/api/airports/AP1/to/AP3?numPassengers=notANum")
         .expect(400)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("Bad request");
@@ -150,10 +155,10 @@ describe("app", () => {
           originalException: "NoneType: None\n",
         },
       });
+      axios.get.mockResolvedValueOnce({ data: mockReturn });
 
       return request(app)
-        .get("/api/airports/notAnId/to/AP3")
-        .send({ numPassengers: 1 })
+        .get("/api/airports/notAnId/to/AP3?numPassengers=1")
         .expect(404)
         .then(({ body: { msg } }) => {
           expect(msg).toBe(
@@ -167,8 +172,7 @@ describe("app", () => {
     it(`should have a status of 200 and return an object with a key of journey and a value of an object with taxi and car keys whose
         values are the estimated costs of going the request 'distance' with the request 'numPassengers' using that mode of transport`, () => {
       return request(app)
-        .get("/api/journey")
-        .send({ distance: 10, numPassengers: 1 })
+        .get("/api/journey?distance=10&numPassengers=1")
         .expect(200)
         .then(({ body: { journey } }) => {
           expect(journey.taxi).toBe(4);
@@ -177,47 +181,58 @@ describe("app", () => {
     });
     it("should scale with the number of passengers as each car/taxi can only hold 4 people", () => {
       return request(app)
-        .get("/api/journey")
-        .send({ distance: 10, numPassengers: 5 })
+        .get("/api/journey?distance=10&numPassengers=5")
         .expect(200)
         .then(({ body: { journey } }) => {
           expect(journey.taxi).toBe(8);
           expect(journey.car).toBe(10);
         });
     });
-    it(`should return status 400 and an object with a key of 'msg' with a value of 'Missing required field' if 'distance' field isn't sent
-        with the request`, () => {
+    it(`should return status 400 and an object with a key of 'msg' with a value of 'Missing required query' if 'distance' query isn't
+        part of the URL`, () => {
       return request(app)
-        .get("/api/journey")
-        .send({ numPassengers: 1 })
+        .get("/api/journey?distance=1")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("Missing required field");
+          expect(msg).toBe("Missing required query");
         });
     });
-    it(`should return status 400 and an object with a key of 'msg' with a value of 'Missing required field' if 'numPassengers' field isn't sent
-        with the request`, () => {
+    it(`should return status 400 and an object with a key of 'msg' with a value of 'Missing required query' if 'numPassengers' query
+        isn't part of the URL`, () => {
       return request(app)
-        .get("/api/journey")
-        .send({ distance: 1 })
+        .get("/api/journey?numPassengers=1")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("Missing required field");
+          expect(msg).toBe("Missing required query");
         });
     });
-    it("should return status 400 and an object with a key of 'msg' with a value of 'Bad request' if 'distance' field is not above 0", () => {
+    it("should return status 400 and an object with a key of 'msg' with a value of 'Bad request' if 'distance' query is not above 0", () => {
       return request(app)
-        .get("/api/journey")
-        .send({ distance: -100, numPassengers: 1 })
+        .get("/api/journey?distance=-100&numPassengers=1")
         .expect(400)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("Bad request");
         });
     });
-    it("should return status 400 and an object with a key of 'msg' with a value of 'Bad request' if 'numPassengers' field is not above 0", () => {
+    it("should return status 400 and an object with a key of 'msg' with a value of 'Bad request' if 'numPassengers' query is not above 0", () => {
       return request(app)
-        .get("/api/journey")
-        .send({ distance: 1, numPassengers: -10 })
+        .get("/api/journey?distance=1&numPassengers=-10")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request");
+        });
+    });
+    it("should return status 400 and an object with a key of 'msg' with a value of 'Bad request' if 'numPassengers' query is not a number", () => {
+      return request(app)
+        .get("/api/journey?distance=1&numPassengers=notANum")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request");
+        });
+    });
+    it("should return status 400 and an object with a key of 'msg' with a value of 'Bad request' if 'distance' query is not a number", () => {
+      return request(app)
+        .get("/api/journey?distance=notANum&numPassengers=1")
         .expect(400)
         .then(({ body: { msg } }) => {
           expect(msg).toBe("Bad request");

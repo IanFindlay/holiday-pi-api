@@ -13,7 +13,7 @@ function fetchAirports(_, res, next) {
 }
 
 function fetchJourneyCosts(req, res, next) {
-  const { distance, numPassengers } = req.body;
+  const { distance, numPassengers } = req.query;
   calculateJourneyCosts(distance, numPassengers)
     .then((journey) => {
       res.status(200).send({ journey });
@@ -23,7 +23,7 @@ function fetchJourneyCosts(req, res, next) {
 
 function fetchRouteDetails(req, res, next) {
   const { id, toId } = req.params;
-  const { numPassengers } = req.body;
+  const { numPassengers } = req.query;
   calculateRouteDetails(id.toUpperCase(), toId.toUpperCase(), numPassengers)
     .then((details) => {
       res.status(200).send({ details });

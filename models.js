@@ -17,7 +17,14 @@ async function getAirports() {
 
 async function calculateJourneyCosts(distance, numPassengers) {
   if (distance === undefined || numPassengers === undefined)
-    return Promise.reject({ status: 400, msg: "Missing required field" });
+    return Promise.reject({ status: 400, msg: "Missing required query" });
+
+  if (Number.isNaN(Number(numPassengers)) || Number.isNaN(Number(distance))) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
+  distance = Number(distance);
+  numPassengers = Number(numPassengers);
 
   if (distance <= 0 || numPassengers <= 0)
     return Promise.reject({ status: 400, msg: "Bad request" });
@@ -35,13 +42,20 @@ async function calculateJourneyCosts(distance, numPassengers) {
 
 async function calculateRouteDetails(id, toId, numPassengers) {
   if (numPassengers === undefined)
-    return Promise.reject({ status: 400, msg: "Missing required field" });
+    return Promise.reject({ status: 400, msg: "Missing required query" });
+
+  if (Number.isNaN(Number(numPassengers))) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
+  numPassengers = Number(numPassengers);
 
   if (numPassengers <= 0)
     return Promise.reject({ status: 400, msg: "Bad request" });
 
   const outboundCall = axios.get(`${baseUrl}/airport/${id}/to/${toId}`);
   const returnCall = axios.get(`${baseUrl}/airport/${toId}/to/${id}`);
+
   const [{ data: outboundDetails }, { data: returnDetails }] =
     await Promise.all([outboundCall, returnCall]);
 
