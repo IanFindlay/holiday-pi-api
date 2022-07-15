@@ -104,7 +104,6 @@ describe("app", () => {
         .get("/api/airports/AP1/to/AP3?numPassengers=1")
         .expect(200)
         .then(({ body: { details } }) => {
-          console.log(details);
           expect(details).toEqual({
             outboundDetails: mockOutbound,
             returnDetails: mockReturn,
