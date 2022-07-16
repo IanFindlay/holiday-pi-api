@@ -86,39 +86,32 @@ describe("app", () => {
   });
 
   describe("GET /api/airports/:id/to/:toId", () => {
-    const mockOutbound = {
+    const mockJourney = {
       journey: ["AP1", "AP2", "AP3"],
       miles: [20, 10],
     };
-    const mockReturn = {
-      journey: ["AP3", "AP1"],
-      miles: [10],
-    };
 
-    it(`should have a status of 200 and return an object with a key of details and a value of an object with the keys 'outboundDetails',
-       'returnDetails' and 'totalCost'. outboundDetails and returnDetails should match their respective mocks and totalCost should be
-       calculated correctly`, () => {
-      axios.get.mockResolvedValueOnce({ data: mockOutbound });
-      axios.get.mockResolvedValueOnce({ data: mockReturn });
+    it(`should have a status of 200 and return an object with a key of details and a value of an object with the keys 'journey',
+        'miles' and 'totalCost'. The values for journey and miles should match their respective mocks and totalCost should be correct`, () => {
+      axios.get.mockResolvedValueOnce({ data: mockJourney });
       return request(app)
         .get("/api/airports/AP1/to/AP3?numPassengers=1")
         .expect(200)
         .then(({ body: { details } }) => {
           expect(details).toEqual({
-            outboundDetails: mockOutbound,
-            returnDetails: mockReturn,
-            totalCost: 4,
+            journey: mockJourney.journey,
+            miles: mockJourney.miles,
+            totalCost: 3,
           });
         });
     });
     it("should have a totalCost that scales directly with the numPassengers request query value", () => {
-      axios.get.mockResolvedValueOnce({ data: mockOutbound });
-      axios.get.mockResolvedValueOnce({ data: mockReturn });
+      axios.get.mockResolvedValueOnce({ data: mockJourney });
       return request(app)
         .get("/api/airports/AP1/to/AP3?numPassengers=4")
         .expect(200)
         .then(({ body: { details } }) => {
-          expect(details.totalCost).toBe(16);
+          expect(details.totalCost).toBe(12);
         });
     });
     it(`should return status 400 and an object with a key of 'msg' with a value of 'Missing required query' if 'numPassengers' query
@@ -154,7 +147,6 @@ describe("app", () => {
           originalException: "NoneType: None\n",
         },
       });
-      axios.get.mockResolvedValueOnce({ data: mockReturn });
 
       return request(app)
         .get("/api/airports/notAnId/to/AP3?numPassengers=1")
