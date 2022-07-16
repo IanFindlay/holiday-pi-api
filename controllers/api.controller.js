@@ -22,30 +22,27 @@ function getEndpoints(_, res) {
     },
 
     "GET /api/airports/:id/to/:toId": {
-      description: `Details the fastest, and therefore cheapest, route from one airport ID to the other including the return.
-                    Responds with an object with keys of 'outboundDetails', 'returnDetails' and 'totalCost`,
-      queries: [],
+      description:
+        "Details the fastest, and therefore cheapest, route from one airport ID to the other",
+      queries: { numPassengers: "Any whole number above 0" },
       expectedStatus: 200,
-      exampleRequest: { numPassengers: 1 },
       exampleResponse: {
-        outboundDetails: {
-          journey: ["AP1", "AP2", "AP3"],
-          miles: [20, 10],
+        details: {
+          journey: [],
+          miles: [],
+          totalCost: 3,
         },
-        returnDetails: {
-          journey: ["AP3", "AP1"],
-          miles: [10],
-        },
-        totalCost: 4,
       },
     },
 
     "GET /api/journey": {
       description:
         "Responds with estimated calculations for how much a taxi and car would cost to travel the request distance",
-      queries: [],
+      queries: {
+        numPassengers: "Any whole number above 0",
+        distance: "Any number above 0",
+      },
       expectedStatus: 200,
-      exampleRequest: { numPassengers: 1, distance: 10 },
       exampleResponse: {
         journey: { taxi: 4, car: 5 },
       },
