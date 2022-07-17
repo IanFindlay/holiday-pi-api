@@ -44,7 +44,7 @@ async function calculateRouteDetails(id, toId, numPassengers) {
   if (numPassengers === undefined)
     return Promise.reject({ status: 400, msg: "Missing required query" });
 
-  if (Number.isNaN(Number(numPassengers))) {
+  if (id === toId || Number.isNaN(Number(numPassengers))) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
 

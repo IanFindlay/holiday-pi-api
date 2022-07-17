@@ -157,6 +157,14 @@ describe("app", () => {
           );
         });
     });
+    it("should return status 400 and an object with a key of 'msg' with a value of 'Bad request' if both airport ids are the same", () => {
+      return request(app)
+        .get("/api/airports/AP1/to/AP1?numPassengers=1")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request");
+        });
+    });
   });
 
   describe("GET /api/journey", () => {
